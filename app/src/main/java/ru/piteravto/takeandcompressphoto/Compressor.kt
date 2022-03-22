@@ -29,11 +29,9 @@ object Compressor {
             bitmap.compress(FORMAT, quality, stream)
             Log.e(TAG, "compressImage: new quality = $quality size = ${stream.size()}")
         }
-// это попытка перевести всё в Base64 и обратно, пока неудачная.
-//        val toBase64 = Base64.encode(stream.toByteArray(), Base64.DEFAULT)
-//        val string = toBase64.toString()
-//        val byteArray = string.toByteArray()
-//        val fromBase64 = Base64.decode(byteArray, Base64.DEFAULT)
+//          Перегоняем в Base64 string и обратно
+//        val toBase64String = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
+//        val fromBase64 = Base64.decode(toBase64String.toByteArray(), Base64.DEFAULT)
 //        return BitmapFactory.decodeByteArray(fromBase64, 0, fromBase64.size)
         return BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.toByteArray().size)
     }
