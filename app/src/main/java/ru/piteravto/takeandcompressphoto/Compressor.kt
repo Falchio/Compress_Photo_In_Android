@@ -1,17 +1,15 @@
 package ru.piteravto.takeandcompressphoto
 
 import android.graphics.*
-import android.util.Base64
-import android.util.Log
 import android.util.TypedValue
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.nio.ByteBuffer
 
 private const val TAG = "Compressor"
 private const val START_QUALITY = 100
 private const val QUALITY_DECREASE_STEP = 10
-
+private const val DEFAULT_TEXT_SIZE = 18
+private const val MARGIN = 30
 
 object Compressor {
     private val FORMAT = Bitmap.CompressFormat.JPEG
@@ -31,10 +29,11 @@ object Compressor {
             quality -= QUALITY_DECREASE_STEP
             waterMarkBitmap.compress(FORMAT, quality, stream)
         }
-
-        val toBase64String = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
-        val fromBase64 = Base64.decode(toBase64String.toByteArray(), Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(fromBase64, 0, fromBase64.size)
+//        тестовое преобразование в Base64 и обратно
+//        val toBase64String = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
+//        val fromBase64 = Base64.decode(toBase64String.toByteArray(), Base64.DEFAULT)
+//        return BitmapFactory.decodeByteArray(fromBase64, 0, fromBase64.size)
+        return BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size())
     }
 
     fun mark(source: Bitmap, watermark: String? = null): Bitmap {
@@ -44,15 +43,42 @@ object Compressor {
         val result = Bitmap.createBitmap(width, height, source.config)
         val canvas = Canvas(result)
         canvas.drawBitmap(source, 0f, 0f, null)
-        val paint = getPaint(18)
-        val (widthPaint, heightPaint) = paint.getTextWidthAndHeight(watermark)
+
+
+        val textPaint = getTextPaint(DEFAULT_TEXT_SIZE)
+        val (widthPaint, heightPaint) = textPaint.getTextWidthAndHeight(watermark)
+
+        val backgroundPaint = getBackgroundPaint()
+//        canvas.drawRect(
+//            width - widthPaint - MARGIN,
+//            height + heightPaint + MARGIN,
+//            width.toFloat() - MARGIN,
+//            height.toFloat() - MARGIN,
+//            backgroundPaint
+//        )
+
+        canvas.drawRect(
+            width - widthPaint - MARGIN,
+            height - heightPaint*2,
+            width.toFloat(),
+            height.toFloat() - heightPaint + MARGIN,
+            backgroundPaint
+        )
+
         canvas.drawText(
             watermark,
             width - widthPaint,
             height - heightPaint,
-            paint
+            textPaint
         )
         return result
+    }
+
+    private fun getBackgroundPaint(): Paint {
+        return Paint().apply {
+            style = Paint.Style.FILL
+            color = Color.BLACK
+        }
     }
 
     private fun dpToPx(dp: Int): Float {
@@ -64,7 +90,7 @@ object Compressor {
     }
 
     /** Подготовка холста */
-    private fun getPaint(textSize: Int, isShadowEnable: Boolean = false): Paint {
+    private fun getTextPaint(textSize: Int, isShadowEnable: Boolean = false): Paint {
         return Paint(Paint.ANTI_ALIAS_FLAG).apply {
             setTextSize(dpToPx(textSize))
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
@@ -73,7 +99,7 @@ object Compressor {
                 setShadowLayer(2f, 2f, 2f, Color.BLACK)
             }
 
-            color = Color.RED
+            color = Color.WHITE
             textAlign = Paint.Align.LEFT
         }
     }
