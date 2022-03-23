@@ -49,13 +49,6 @@ object Compressor {
         val (widthPaint, heightPaint) = textPaint.getTextWidthAndHeight(watermark)
 
         val backgroundPaint = getBackgroundPaint()
-//        canvas.drawRect(
-//            width - widthPaint - MARGIN,
-//            height + heightPaint + MARGIN,
-//            width.toFloat() - MARGIN,
-//            height.toFloat() - MARGIN,
-//            backgroundPaint
-//        )
 
         canvas.drawRect(
             width - widthPaint - MARGIN,
