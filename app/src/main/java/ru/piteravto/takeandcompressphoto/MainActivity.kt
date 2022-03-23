@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success) {
                 Log.e(TAG, "file = ${imageFile.absolutePath}")
-                val compressedFile = Compressor.compressImage(imageFile, LIMIT_FILE_SIZE)
+                val compressedFile = Compressor.compressImage(imageFile, LIMIT_FILE_SIZE, "TEST TEST TEST")
                 val imageView = findViewById<ImageView>(R.id.image)
                 imageView.setImageBitmap(compressedFile)
             } else {
